@@ -33,26 +33,27 @@ public class ElasticSearchServiceTest {
     @Test
     public void searchWithinTimeRangeTest(){
 
+        int pageNumber = 0 ;
         SearchRequest searchRequest = SearchRequest.builder().phoneNumber("+912345678901").startCreatedAt(1234).endCreatedAt(2345).build();
         SearchEntity searchEntity = SearchEntity.builder().phoneNumber("+912345678901").build();
 
         when(searchRepository.findByPhoneNumberAndCreatedAtBetweenOrderByCreatedAtDesc(searchRequest.getPhoneNumber(), searchRequest.getStartCreatedAt(), searchRequest.getEndCreatedAt(), PageRequest.of(0,50)))
                 .thenReturn(Collections.singletonList(searchEntity));
-
-        assertEquals(1 ,elasticSearchService.searchWithinTimeRange(searchRequest).size() );
+        assertEquals(1 ,elasticSearchService.searchWithinTimeRange(searchRequest, pageNumber).size() );
 
     }
 
     @Test
     public void searchByMessageTest(){
 
+        int pageNumber = 0 ;
         SearchRequest searchRequest = SearchRequest.builder().message("Meesho").build();
         SearchEntity searchEntity = SearchEntity.builder().phoneNumber("+912345678901").build();
 
         when(searchRepository.findByMessageContaining(searchRequest.getMessage() , PageRequest.of(0,50)))
                 .thenReturn(Collections.singletonList(searchEntity));
 
-        assertEquals(1 ,elasticSearchService.searchByMessage(searchRequest).size() );
+        assertEquals(1 ,elasticSearchService.searchByMessage(searchRequest, pageNumber).size() );
 
     }
 

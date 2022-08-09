@@ -9,10 +9,7 @@ import com.meesho.notificationservice.service.ElasticSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,17 +23,17 @@ public class SearchController {
     @Autowired
     private SearchRepository searchRepository;
 
-    @GetMapping("/time")
-    public ResponseEntity<SearchResponse> searchWithinTimeRange(@RequestBody SearchRequest request){
-        List<SearchEntity> allMessagesInTimeRange = elasticSearchService.searchWithinTimeRange(request);
+    @GetMapping("/time/{pageNumber}")
+    public ResponseEntity<SearchResponse> searchWithinTimeRange(@RequestBody SearchRequest request, @PathVariable int pageNumber){
+        List<SearchEntity> allMessagesInTimeRange = elasticSearchService.searchWithinTimeRange(request, pageNumber);
 
         return new ResponseEntity<>(new SearchResponse(allMessagesInTimeRange), HttpStatus.OK);
 
     }
 
-    @GetMapping("/message")
-    public ResponseEntity<SearchResponse> searchByMessage(@RequestBody SearchRequest request){
-        List<SearchEntity> searchedMessages = elasticSearchService.searchByMessage(request);
+    @GetMapping("/message/{pageNumber}")
+    public ResponseEntity<SearchResponse> searchByMessage(@RequestBody SearchRequest request, @PathVariable int pageNumber){
+        List<SearchEntity> searchedMessages = elasticSearchService.searchByMessage(request, pageNumber);
 
         return new ResponseEntity<>(new SearchResponse(searchedMessages), HttpStatus.OK);
 
