@@ -1,10 +1,9 @@
-package com.meesho.notificationservice;
+package com.meesho.notificationservice.service;
 
 
 import com.meesho.notificationservice.models.SearchEntity;
 import com.meesho.notificationservice.models.request.SearchRequest;
 import com.meesho.notificationservice.repository.SearchRepository;
-import com.meesho.notificationservice.service.ElasticSearchService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -12,11 +11,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.PageRequest;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ElasticSearchServiceTest {
@@ -55,6 +53,13 @@ public class ElasticSearchServiceTest {
 
         assertEquals(1 ,elasticSearchService.searchByMessage(searchRequest, pageNumber).size() );
 
+    }
+
+    @Test
+    public void saveTest(){
+        SearchEntity searchEntity = SearchEntity.builder().phoneNumber("+912345678901").build();
+        elasticSearchService.save(searchEntity);
+        verify(searchRepository, times(1)).save(searchEntity);
     }
 
 }

@@ -9,7 +9,6 @@ import com.meesho.notificationservice.repository.BlacklistRepository;
 import com.meesho.notificationservice.repository.RedisManager;
 import com.meesho.notificationservice.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 
@@ -36,12 +35,8 @@ public class BlacklistService {
 
         for(BlacklistPhoneNumber phoneNumber: phoneNumbers){
             if(Utils.isValidPhoneNumber(phoneNumber.getPhoneNumber())){
-                redisManager.addInCache(phoneNumber.getPhoneNumber(), "TRUE");
-                try{
-                    blacklistRepository.save(phoneNumber);
-                }catch (DataAccessException e){
-                    throw new BadRequestException("Internal server Error");
-                }
+                redisManager.addInCache(phoneNumber.getPhoneNumber());
+                blacklistRepository.save(phoneNumber);
             }
             else{
                 invalidPhoneNumbers.add(phoneNumber.getPhoneNumber());
@@ -74,11 +69,7 @@ public class BlacklistService {
         for(BlacklistPhoneNumber phoneNumber: phoneNumbers){
             if(Utils.isValidPhoneNumber(phoneNumber.getPhoneNumber())){
                 redisManager.deleteFromCache((phoneNumber.getPhoneNumber()));
-                try{
-                    blacklistRepository.deleteById(phoneNumber.getPhoneNumber());
-                }catch (DataAccessException e){
-                    throw new BadRequestException("Internal server Error");
-                }
+                blacklistRepository.deleteById(phoneNumber.getPhoneNumber());
             }
             else{
                 invalidPhoneNumbers.add(phoneNumber.getPhoneNumber());
@@ -90,14 +81,7 @@ public class BlacklistService {
         return BlackListResponse.builder().phoneNumbers(invalidPhoneNumbers).message("Phone Numbers are whitelisted except some of them").build();
 
     }
-
     public Boolean getStatusOfBlacklistNumber(String phoneNumber) {
-
-        if(redisManager.presentInCache(phoneNumber)){
-            return redisManager.presentInCache(phoneNumber);
-        }else{
-             return  blacklistRepository.existsById(phoneNumber);
-        }
-
+        return redisManager.presentInCache(phoneNumber);
     }
 }

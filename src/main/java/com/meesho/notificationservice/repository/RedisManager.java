@@ -15,8 +15,8 @@ public class RedisManager {
     private RedisTemplate<String, String> redisTemplate;
 
 
-    public void addInCache(String key, String value){
-        redisTemplate.opsForValue().set(key, value);
+    public void addInCache(String key){
+        redisTemplate.opsForValue().set(key, "TRUE");
     }
 
     public void deleteFromCache(String key){

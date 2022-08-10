@@ -1,4 +1,4 @@
-package com.meesho.notificationservice;
+package com.meesho.notificationservice.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
