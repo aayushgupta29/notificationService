@@ -22,10 +22,8 @@ public class SmsRequestServiceTest {
 
     @Mock
     SmsRequestRepository smsRequestRepository;
-
     @Mock
     Producer producer;
-
     @InjectMocks
     SmsRequestService smsRequestService;
 
@@ -47,8 +45,6 @@ public class SmsRequestServiceTest {
         when(smsRequestRepository.findById(1)).thenReturn(null);
         assertThatThrownBy(() -> smsRequestService.findSmsRequest(1)).isInstanceOf(NotFoundException.class).hasMessage("RequestId not found");
     }
-
-
 
     @Test
     public void sendSmsTest()  {

@@ -22,7 +22,6 @@ public class BlacklistService {
 
     @Autowired
     private BlacklistRepository blacklistRepository;
-
     @Autowired
     private RedisManager redisManager;
 
@@ -48,8 +47,6 @@ public class BlacklistService {
         return BlackListResponse.builder().phoneNumbers(invalidPhoneNumbers).message("Phone Numbers are blacklisted except some of them").build();
 
     }
-
-
 
     public BlackListResponse getBlacklistNumbers() {
 

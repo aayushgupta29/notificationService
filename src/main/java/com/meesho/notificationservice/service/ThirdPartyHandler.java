@@ -5,7 +5,6 @@ import com.meesho.notificationservice.models.SmsRequest;
 import com.meesho.notificationservice.models.request.MessageDetailsFor3P;
 import com.meesho.notificationservice.models.response.ResponseFrom3P;
 import com.meesho.notificationservice.repository.SmsRequestRepository;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.security.Key;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 
 import static com.meesho.notificationservice.constants.Constants.KEY;
@@ -28,23 +24,16 @@ import static com.meesho.notificationservice.constants.Constants.THIRD_PARTY_URL
 public class ThirdPartyHandler {
 
     private static final Logger LOGGER  = LoggerFactory.getLogger(ThirdPartyHandler.class);
-
-
     @Autowired
     private RestTemplate restTemplate;
-
     @Autowired
     private SmsRequestRepository smsRequestRepository;
-
     @Autowired
     private ElasticSearchService elasticSearchService;
-
-
 
     public void sendThirdPartySms(SmsRequest smsRequest){
 
         ResponseFrom3P.Response response = new ResponseFrom3P.Response();
-
         try{
             MessageDetailsFor3P messageDetailsFor3P = prepareMessageDetails(smsRequest);
             ResponseFrom3P responseFrom3P = sendMessageVia3P(messageDetailsFor3P);
@@ -60,7 +49,6 @@ public class ThirdPartyHandler {
             LOGGER.error(String.format("Message not sent fun error"));
             return;
         }
-
         if(response.getCode().equals("1001")){
             addToElasticSearch(smsRequest);
             smsRequest.setUpdatedAt(System.currentTimeMillis());
@@ -75,7 +63,6 @@ public class ThirdPartyHandler {
             smsRequest.setFailureCode("ERR_EXTERNAL");
             smsRequestRepository.save(smsRequest);
             LOGGER.error(String.format("Message not sent successful third party API give error"));
-
         }
     }
 
@@ -87,7 +74,6 @@ public class ThirdPartyHandler {
         searchEntity.setCreatedAt(smsRequest.getCreatedAt());
         elasticSearchService.save(searchEntity);
     }
-
 
     private MessageDetailsFor3P prepareMessageDetails(SmsRequest smsRequest){
         return MessageDetailsFor3P.builder()
@@ -103,12 +89,18 @@ public class ThirdPartyHandler {
             .build();
     }
 
-    private ResponseFrom3P sendMessageVia3P(MessageDetailsFor3P messageDetailsFor3P){
+    private HttpEntity<MessageDetailsFor3P> prepareHttpEntity(MessageDetailsFor3P messageDetailsFor3P){
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("key", KEY);
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        HttpEntity<MessageDetailsFor3P> entity = new HttpEntity<>(messageDetailsFor3P, headers);
+        return  new HttpEntity<>(messageDetailsFor3P, headers);
+    }
+
+    private ResponseFrom3P sendMessageVia3P(MessageDetailsFor3P messageDetailsFor3P){
+
+        HttpEntity<MessageDetailsFor3P> entity = prepareHttpEntity(messageDetailsFor3P);
         try{
             return restTemplate.postForObject(
                     THIRD_PARTY_URL, entity, ResponseFrom3P.class
@@ -116,7 +108,6 @@ public class ThirdPartyHandler {
         }
         catch (Exception e){
             e.printStackTrace();
-
             return  new ResponseFrom3P();
         }
     }

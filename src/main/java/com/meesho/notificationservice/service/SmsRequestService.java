@@ -20,10 +20,8 @@ public class SmsRequestService {
     public SuccessResponseEntity sendSms(SmsRequest smsRequest) throws BadRequestException, NotFoundException {
 
         isValidSmsRequest(smsRequest);
-
         smsRequest.setStatus("KAFKA_SEND");
         smsRequest.setCreatedAt(System.currentTimeMillis());
-
         smsRequestRepository.save(smsRequest);
         producer.sendMessage(smsRequest.getId());
         return new SuccessResponseEntity(smsRequest.getId(), "hi its successful");

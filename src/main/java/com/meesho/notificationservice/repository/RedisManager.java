@@ -10,10 +10,8 @@ import java.util.Set;
 @Service
 public class RedisManager {
 
-
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
-
 
     public void addInCache(String key){
         redisTemplate.opsForValue().set(key, "TRUE");
